@@ -1,81 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My GitHub Repositories</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Repositories</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f2f5;
+        color: #333;
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    header {
+        background: #24292e;
+        color: #fff;
+        text-align: center;
+        padding: 20px 10px;
+    }
 
-        .repo {
-            background-color: #fff;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    header h1 {
+        margin: 0;
+        font-size: 2rem;
+    }
 
-        .repo h3 {
-            margin-top: 0;
-        }
+    .container {
+        max-width: 1000px;
+        margin: 30px auto;
+        padding: 0 15px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
 
-        .repo p {
-            margin-bottom: 0;
-        }
+    .repo {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
-            }
-        }
-    </style>
+    .repo:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .repo h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.3rem;
+    }
+
+    .repo a {
+        text-decoration: none;
+        color: #0366d6;
+    }
+
+    .repo a:hover {
+        text-decoration: underline;
+    }
+
+    .repo p {
+        margin: 0 0 15px 0;
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+    .repo .stats {
+        font-size: 0.85rem;
+        color: #666;
+        display: flex;
+        gap: 15px;
+    }
+
+    .stats span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>GitHub Repositories</h1>
-        <div id="repos"></div>
-    </div>
+<header>
+    <h1>My GitHub Repositories</h1>
+</header>
 
-    <script>
-        const username = "kazakhan";
+<div class="container" id="repos"></div>
 
-        fetch(`https://api.github.com/users/${username}/repos`)
-            .then(response => response.json())
-            .then(repos => {
-                const reposDiv = document.getElementById('repos');
-                repos.forEach(repo => {
-                    const repoDiv = document.createElement('div');
-                    repoDiv.classList.add('repo');
+<script>
+    const username = "kazakhan";
 
-                    const repoName = document.createElement('h3');
-                    const repoLink = document.createElement('a');
-                    repoLink.href = repo.html_url;
-                    repoLink.textContent = repo.name;
-                    repoName.appendChild(repoLink);
+    fetch(`https://api.github.com/users/${username}/repos?sort=updated`)
+        .then(response => response.json())
+        .then(repos => {
+            const reposDiv = document.getElementById('repos');
+            repos.forEach(repo => {
+                const repoDiv = document.createElement('div');
+                repoDiv.classList.add('repo');
 
-                    const repoDescription = document.createElement('p');
-                    repoDescription.textContent = repo.description || "No description provided.";
+                const repoName = document.createElement('h3');
+                const repoLink = document.createElement('a');
+                repoLink.href = repo.html_url;
+                repoLink.textContent = repo.name;
+                repoName.appendChild(repoLink);
 
-                    repoDiv.appendChild(repoName);
-                    repoDiv.appendChild(repoDescription);
+                const repoDescription = document.createElement('p');
+                repoDescription.textContent = repo.description || "No description provided.";
 
-                    reposDiv.appendChild(repoDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching repositories:', error);
+                const statsDiv = document.createElement('div');
+                statsDiv.classList.add('stats');
+                statsDiv.innerHTML = `
+                    <span>⭐ ${repo.stargazers_count}</span>
+                    <span>🍴 ${repo.forks_count}</span>
+                `;
+
+                repoDiv.appendChild(repoName);
+                repoDiv.appendChild(repoDescription);
+                repoDiv.appendChild(statsDiv);
+
+                reposDiv.appendChild(repoDiv);
             });
-    </script>
+        })
+        .catch(error => {
+            console.error('Error fetching repositories:', error);
+        });
+</script>
 </body>
 </html>
